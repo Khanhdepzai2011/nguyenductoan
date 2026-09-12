@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nguyễn trường hợp 10/2 — Bảng tuần hoàn hóa học 3D</title>
+<style>
+:root{--bg:#02070c;--ink:#effcff;--cyan:#00f0ff;--cyan2:#77fbff;--teal:#00aebd;--muted:#6b9ca6;--panel:rgba(7,20,28,.78);--line:rgba(0,240,255,.18);--red:#ff4960;--gray:#aeb7bc;--gold:#d9c46c;--shadow:0 20px 60px rgba(0,0,0,.55),0 0 45px rgba(0,240,255,.08)}
+*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font-family:Inter,Segoe UI,Arial,sans-serif}button,input,select{font:inherit}button{cursor:pointer}
+body{background:radial-gradient(circle at 50% 45%,#0a2630 0,#03131a 34%,#02070c 72%)}body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 50%,rgba(0,240,255,.09),transparent 28%),linear-gradient(115deg,transparent 0 35%,rgba(0,240,255,.025) 50%,transparent 65%);z-index:-2}body:after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.22;background-image:linear-gradient(rgba(0,240,255,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,.09) 1px,transparent 1px);background-size:52px 52px;mask-image:radial-gradient(circle at center,#000 0,#000 58%,transparent 94%)}
+.app{height:100vh;display:grid;grid-template-rows:72px 1fr 164px;position:relative}
+.top{display:flex;align-items:center;justify-content:space-between;padding:0 24px;border-bottom:1px solid rgba(0,240,255,.15);background:rgba(2,10,15,.72);backdrop-filter:blur(20px);z-index:20;box-shadow:0 10px 40px #0009}.brand{display:flex;align-items:center;gap:12px;font-size:19px;font-weight:950;letter-spacing:.16em;text-transform:uppercase}.brand:before{content:"";width:7px;height:30px;background:var(--cyan);box-shadow:0 0 18px var(--cyan);clip-path:polygon(0 0,100% 0,65% 100%,0 100%)}.brand small{display:block;margin-top:5px;color:#6fa9b4;font-size:9px;letter-spacing:.27em;font-weight:800}.actions{display:flex;gap:8px}.icon{width:43px;height:43px;border:1px solid var(--line);border-radius:13px;background:linear-gradient(145deg,rgba(8,37,46,.8),rgba(2,14,20,.9));color:var(--cyan2);box-shadow:inset 0 0 20px rgba(0,240,255,.04);transition:.2s}.icon:hover{border-color:var(--cyan);box-shadow:0 0 24px rgba(0,240,255,.2);transform:translateY(-2px)}
+.main{position:relative;min-height:0;overflow:hidden}#scene{position:absolute;inset:0;width:100%;height:100%;display:block;background:radial-gradient(circle at 50% 48%,rgba(13,67,78,.62),rgba(3,18,25,.76) 38%,rgba(2,7,12,.98) 78%)}.grid{position:absolute;inset:0;pointer-events:none;opacity:.5;background-image:linear-gradient(rgba(0,240,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,.055) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(circle at center,#000,transparent 82%)}
+.main:before{content:"NGUYỄN ĐỨC TOÀN 10/2   //   ELEMENT VISUALIZER";position:absolute;left:24px;top:20px;color:#568792;font:800 9px ui-monospace,monospace;letter-spacing:.16em;z-index:3}.main:after{content:"LIVE  •  118 ELEMENTS  •  3D";position:absolute;right:24px;top:20px;color:#568792;font:800 9px ui-monospace,monospace;letter-spacing:.12em;z-index:3}
+.tools{position:absolute;left:20px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px;z-index:10}.tool{width:50px;height:50px;border:1px solid rgba(0,240,255,.2);border-radius:16px;background:linear-gradient(145deg,rgba(8,42,51,.92),rgba(2,14,20,.94));color:var(--cyan2);font-size:18px;box-shadow:var(--shadow);transition:.2s;position:relative}.tool:first-child{border-color:rgba(0,240,255,.65);box-shadow:0 0 22px rgba(0,240,255,.13),var(--shadow)}.tool:hover{transform:translateX(5px);border-color:var(--cyan);color:#fff;box-shadow:0 0 28px rgba(0,240,255,.24),var(--shadow)}
+/* center targeting frame */.main .grid:before{content:"";position:absolute;left:50%;top:50%;width:min(52vw,560px);height:min(52vw,560px);transform:translate(-50%,-50%);border:1px solid rgba(0,240,255,.10);border-radius:50%;box-shadow:0 0 80px rgba(0,240,255,.06),inset 0 0 80px rgba(0,240,255,.035)}.main .grid:after{content:"";position:absolute;left:50%;top:50%;width:min(38vw,410px);height:min(38vw,410px);transform:translate(-50%,-50%);border:1px dashed rgba(0,240,255,.11);border-radius:50%;animation:spin 24s linear infinite}@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.info{position:absolute;right:22px;top:52px;width:286px;z-index:8;padding:20px;border:1px solid rgba(0,240,255,.2);border-radius:22px;background:linear-gradient(155deg,rgba(8,28,37,.86),rgba(2,12,18,.86));backdrop-filter:blur(20px);box-shadow:var(--shadow),inset 0 0 35px rgba(0,240,255,.025)}.info:before{content:"ELEMENT PROFILE  /  ACTIVE";display:block;color:#58a6b2;font:800 8px ui-monospace,monospace;letter-spacing:.2em;margin-bottom:15px}.symbol{font-size:64px;line-height:.8;font-weight:950;color:#f5ffff;text-shadow:0 0 25px rgba(0,240,255,.3)}.name{margin:9px 0 16px;color:#78aeb8;font-size:12px}.row{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid rgba(0,240,255,.09);font-size:10px;color:#6e98a1}.row strong{color:#eaffff;text-align:right;max-width:175px}.config{margin-top:10px;padding:10px;border:1px solid rgba(0,240,255,.1);border-radius:10px;background:rgba(0,240,255,.025);font-family:ui-monospace,monospace;font-size:10px;line-height:1.5;color:#8cecf5;word-break:break-word}
+.hint{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);padding:8px 15px;border:1px solid rgba(0,240,255,.13);border-radius:999px;background:rgba(2,13,18,.72);color:#5c8c96;font:700 9px ui-monospace,monospace;letter-spacing:.08em;z-index:4;white-space:nowrap}
+.panel{position:absolute;z-index:15;left:86px;top:30px;width:min(1180px,calc(100% - 172px));max-height:calc(100% - 60px);overflow:auto;padding:22px;border:1px solid rgba(0,240,255,.2);border-radius:24px;background:linear-gradient(145deg,rgba(5,25,33,.96),rgba(2,12,18,.96));backdrop-filter:blur(22px);box-shadow:var(--shadow),inset 0 0 55px rgba(0,240,255,.025);display:none}.panel.show{display:block}.panel h2{margin:0 0 12px;font-size:21px}.panel::-webkit-scrollbar{height:8px;width:8px}.panel::-webkit-scrollbar-thumb{background:#155362;border-radius:10px}
+.tableHead{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:16px}.tableHead h2{margin:0}.tableHead p{margin:5px 0 0;color:#5d8d97;font-size:10px}.legend{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:7px;max-width:700px}.legend span{font-size:8px;color:#7da5ad;display:flex;align-items:center;gap:4px}.legend i{width:8px;height:8px;border-radius:3px;display:inline-block}.groupLabels{display:grid;grid-template-columns:repeat(18,minmax(38px,1fr));gap:5px;margin-left:31px;margin-bottom:5px}.groupLabels span{text-align:center;font-size:8px;color:#4c7d87}.periodic{display:grid;grid-template-columns:28px repeat(18,minmax(38px,1fr));grid-template-rows:repeat(7,64px) 12px repeat(2,64px);gap:5px}.period{font-size:8px;color:#4c7d87;display:flex;align-items:center;justify-content:center}
+.el{min-width:0;min-height:64px;padding:5px 4px;border:1px solid rgba(180,245,255,.10);border-radius:11px;color:#efffff;text-align:center;position:relative;overflow:hidden;transition:.18s;box-shadow:inset 0 0 20px rgba(255,255,255,.025)}.el:after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.08),transparent 42%);pointer-events:none}.el:hover{transform:translateY(-4px) scale(1.03);z-index:5;border-color:var(--cyan);box-shadow:0 12px 30px #000a,0 0 20px rgba(0,240,255,.16)}.el.active{border-color:var(--cyan);box-shadow:0 0 0 2px rgba(0,240,255,.45),0 0 28px rgba(0,240,255,.2);transform:translateY(-2px)}.el .z{font-size:8px;color:#d6f9ff;display:block;text-align:left}.el b{font-size:21px;line-height:1.05;display:block;margin-top:1px}.el small{font-size:8px;display:block;color:#ccecf1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}.el.cat-alkali{background:linear-gradient(145deg,#124957,#092a35)}.el.cat-alkaline{background:linear-gradient(145deg,#0e3f55,#092632)}.el.cat-transition{background:linear-gradient(145deg,#104b46,#092d2c)}.el.cat-post{background:linear-gradient(145deg,#4b3f18,#30270e)}.el.cat-metalloid{background:linear-gradient(145deg,#4d3025,#301c16)}.el.cat-nonmetal{background:linear-gradient(145deg,#4b2029,#2d141a)}.el.cat-halogen{background:linear-gradient(145deg,#472044,#2b1429)}.el.cat-noble{background:linear-gradient(145deg,#3b2750,#24162f)}.el.cat-f{background:linear-gradient(145deg,#123f30,#09271e)}.alkali{background:#20cce2}.alkaline{background:#318cab}.transition{background:#35bfa4}.post{background:#c8ad47}.metalloid{background:#b87959}.nonmetal{background:#d85a6c}.halogen{background:#b85cad}.noble{background:#9069b5}.fblock{background:#46bd79}.placeholder{border:1px dashed #286170;border-radius:10px;background:#061a21;color:#5b8e99;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:8px}.placeholder b{font-size:11px;color:#86d7e2}.placeholder small{font-size:7px;color:#4e7983}
+.bottom{display:grid;grid-template-columns:255px 1fr 320px;gap:13px;padding:13px 18px 15px;background:linear-gradient(180deg,rgba(3,15,21,.96),rgba(2,8,12,.99));border-top:1px solid rgba(0,240,255,.16);z-index:20;box-shadow:0 -18px 55px #000a}.card,.controls,.counts{border:1px solid rgba(0,240,255,.13);background:linear-gradient(145deg,rgba(7,27,35,.88),rgba(3,14,20,.94));border-radius:18px;box-shadow:inset 0 0 30px rgba(0,240,255,.025)}.card{display:flex;align-items:center;gap:13px;padding:12px 15px}.big{font-size:38px;font-weight:950;color:var(--cyan);text-shadow:0 0 20px rgba(0,240,255,.3)}.muted{font-size:8px;color:#5e8993;text-transform:uppercase;letter-spacing:.14em;margin-top:4px}.controls{display:flex;align-items:center;gap:9px;padding:12px;position:relative}.controls:before{content:"CONTROL DECK";position:absolute;left:14px;top:-16px;color:#4f858f;font:800 8px ui-monospace,monospace;letter-spacing:.18em}select,input[type=range]{accent-color:var(--cyan)}select{min-width:215px;padding:10px 12px;border-radius:11px;border:1px solid rgba(0,240,255,.18);background:#04151c;color:#e5fbff;outline:none}select:focus{border-color:var(--cyan);box-shadow:0 0 18px rgba(0,240,255,.12)}.ctrl{width:41px;height:41px;border:1px solid rgba(0,240,255,.17);border-radius:11px;background:#061a22;color:#a4f6ff;transition:.18s}.ctrl:hover{border-color:var(--cyan);box-shadow:0 0 18px rgba(0,240,255,.15)}.speed{font-size:8px;color:#5e8993;text-transform:uppercase;letter-spacing:.1em}.range{flex:1;min-width:80px}.counts{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;align-items:center}.count{position:relative}.count:not(:last-child):after{content:"";position:absolute;right:0;top:18%;height:64%;width:1px;background:rgba(0,240,255,.09)}.count b{font-size:25px;display:block;line-height:1}.count #cp{color:var(--gray);text-shadow:0 0 12px rgba(174,183,188,.14)}.count #cn{color:var(--red);text-shadow:0 0 14px rgba(255,73,96,.25)}.count #ce{color:var(--cyan);text-shadow:0 0 15px rgba(0,240,255,.3)}.count span{font-size:8px;color:#5e8993;letter-spacing:.14em}
+@media(max-width:1100px){.info{width:245px}.bottom{grid-template-columns:220px 1fr 270px}.controls select{min-width:160px}}
+@media(max-width:900px){.app{grid-template-rows:60px 1fr 190px}.top{padding:0 14px}.brand{font-size:14px}.main:after{display:none}.info{width:205px;right:12px;top:45px}.bottom{grid-template-columns:1fr 1fr;grid-template-rows:auto auto;padding-bottom:10px}.card,.controls,.counts{grid-column:1/-1}.tablePanel{width:calc(100% - 70px);left:60px}.periodic{min-width:880px}.tablePanel{overflow:auto}.tableHead{display:block}.legend{justify-content:flex-start;margin-top:10px}.tools{left:10px}.hint{max-width:80%;overflow:hidden;text-overflow:ellipsis}}
+
+
+
+/* ===== NEW DESIGN: SLATE / PAPER CHEMISTRY ===== */
+:root{
+ --bg:#11161b;--ink:#eef1f3;--accent:#d7b56d;--accent2:#ead9a9;
+ --panel:rgba(28,34,40,.94);--line:rgba(235,220,180,.18);
+ --muted:#9aa4ad;--red:#c96b70;--gray:#aeb5bb;--blue:#6f9fc4;
+ --green:#789b88;--purple:#9a879f;
+ --shadow:0 22px 70px rgba(0,0,0,.48)
+}
+html,body{background:#11161b}
+body{
+ background:
+ radial-gradient(800px 500px at 50% 35%,rgba(214,181,109,.075),transparent 65%),
+ radial-gradient(600px 420px at 8% 85%,rgba(111,159,196,.06),transparent 68%),
+ linear-gradient(135deg,#0e1318,#171d23 50%,#10151a);
+}
+body:before{background:linear-gradient(125deg,transparent 0 45%,rgba(255,255,255,.018) 50%,transparent 55%)}
+body:after{opacity:.07;background-image:linear-gradient(rgba(220,225,228,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(220,225,228,.08) 1px,transparent 1px);background-size:64px 64px}
+.app{grid-template-rows:78px 1fr 158px}
+.top{padding:0 30px;background:rgba(15,20,25,.92);border-bottom:1px solid rgba(235,220,180,.13);box-shadow:0 12px 38px rgba(0,0,0,.34);backdrop-filter:blur(18px)}
+.brand{font-size:18px;letter-spacing:.16em;text-shadow:none}.brand:before{width:5px;height:34px;background:var(--accent);box-shadow:none;border-radius:2px}.brand small{color:#9aa4ad;letter-spacing:.26em}
+.icon{width:44px;height:44px;border-radius:12px;background:#1a2127;border-color:rgba(235,220,180,.16);color:#e5d4a5;box-shadow:inset 0 1px rgba(255,255,255,.05)}
+.icon:hover{border-color:rgba(235,220,180,.55);box-shadow:0 8px 24px rgba(0,0,0,.28);transform:translateY(-2px)}
+.main{background:radial-gradient(circle at 50% 50%,rgba(214,181,109,.045),transparent 44%)}
+#scene{background:radial-gradient(circle at 50% 50%,rgba(48,62,70,.32),rgba(12,17,22,.72) 45%,rgba(8,11,14,.96) 80%)}
+.grid{opacity:.20;background-size:58px 58px}
+.main .grid:before{width:min(56vw,600px);height:min(56vw,600px);border-color:rgba(235,220,180,.09);box-shadow:0 0 90px rgba(0,0,0,.25),inset 0 0 90px rgba(235,220,180,.018)}
+.main .grid:after{width:min(42vw,455px);height:min(42vw,455px);border-color:rgba(154,135,159,.13);animation:spin 38s linear infinite}
+.main:before{content:"NGUYỄN ĐỨC TOÀN 10/2  //  CHEMISTRY CORE";left:30px;top:25px;color:#89939b;letter-spacing:.17em}
+.main:after{content:"118 ELEMENTS  •  INTERACTIVE 3D";right:30px;top:25px;color:#89939b;letter-spacing:.14em}
+.tools{left:auto;right:26px;top:50%;gap:10px}
+.tool{width:52px;height:52px;border-radius:13px;background:#1b2329;border-color:rgba(235,220,180,.16);color:#d9c78f;box-shadow:0 14px 35px rgba(0,0,0,.4),inset 0 1px rgba(255,255,255,.05)}
+.tool:first-child{border-color:rgba(235,220,180,.55);box-shadow:0 14px 35px rgba(0,0,0,.4)}
+.tool:hover{transform:translateX(-4px);border-color:rgba(235,220,180,.65);box-shadow:0 16px 35px rgba(0,0,0,.45)}
+.info{left:26px;right:auto;top:62px;width:300px;padding:21px;border-radius:18px;background:linear-gradient(145deg,rgba(32,39,45,.96),rgba(20,25,30,.96));border-color:rgba(235,220,180,.16);box-shadow:var(--shadow),inset 0 1px rgba(255,255,255,.045)}
+.info:before{color:#a99d80;content:"ACTIVE ELEMENT  /  ORBITAL DATA"}
+.symbol{font-size:70px;color:#f1eee7;text-shadow:none;background:none;-webkit-text-fill-color:initial}
+.name{color:#aeb6bc}.row{border-top-color:rgba(220,225,228,.08)}.row strong{color:#edf0f1}.config{border-color:rgba(235,220,180,.12);background:#181f24;color:#d9c78f}
+.hint{bottom:16px;background:rgba(17,22,27,.88);border-color:rgba(235,220,180,.12);color:#8d989f;box-shadow:0 10px 28px rgba(0,0,0,.28)}
+.panel{left:auto;right:92px;top:28px;width:min(1220px,calc(100% - 150px));max-height:calc(100% - 56px);padding:24px;border-radius:22px;background:linear-gradient(145deg,rgba(31,38,44,.98),rgba(17,22,27,.99));border-color:rgba(235,220,180,.16);box-shadow:0 30px 80px rgba(0,0,0,.52),inset 0 1px rgba(255,255,255,.045)}
+.panel.show{animation:drawerIn .22s ease both}
+.panel h2{font-size:22px}.tableHead p{color:#8d989f}.legend span{color:#a3acb2}.groupLabels span{color:#737e86}
+.periodic{gap:6px}
+.el{border-radius:9px;border-color:rgba(230,234,236,.10);box-shadow:inset 0 1px rgba(255,255,255,.04),0 6px 16px rgba(0,0,0,.12)}
+.el:after{background:linear-gradient(145deg,rgba(255,255,255,.05),transparent 40%,rgba(0,0,0,.10))}
+.el:hover{transform:translateY(-4px) scale(1.02);border-color:rgba(235,220,180,.58);box-shadow:0 14px 28px rgba(0,0,0,.42)}
+.el.active{border-color:var(--accent);box-shadow:0 0 0 2px rgba(235,220,180,.20),0 14px 28px rgba(0,0,0,.35);transform:translateY(-2px)}
+.el.cat-alkali{background:linear-gradient(145deg,#485c65,#303e45)}.el.cat-alkaline{background:linear-gradient(145deg,#53636a,#36434a)}
+.el.cat-transition{background:linear-gradient(145deg,#4f665d,#34453e)}.el.cat-post{background:linear-gradient(145deg,#675c40,#443d2b)}
+.el.cat-metalloid{background:linear-gradient(145deg,#665248,#44382f)}.el.cat-nonmetal{background:linear-gradient(145deg,#60454b,#403034)}
+.el.cat-halogen{background:linear-gradient(145deg,#5a4659,#3d303d)}.el.cat-noble{background:linear-gradient(145deg,#514a60,#383340)}
+.el.cat-f{background:linear-gradient(145deg,#465f55,#303f39)}
+.alkali{background:#708893}.alkaline{background:#82979e}.transition{background:#789b88}.post{background:#c0a76b}.metalloid{background:#aa8067}.nonmetal{background:#ae6f77}.halogen{background:#96788f}.noble{background:#887e99}.fblock{background:#729b82}
+.placeholder{border-color:#5a666d;background:#1b2429;color:#8d989f}
+.bottom{grid-template-columns:320px 1fr 255px;padding:12px 22px 14px;background:linear-gradient(180deg,rgba(22,28,33,.97),rgba(12,16,20,.99));border-top-color:rgba(235,220,180,.12);box-shadow:0 -18px 55px rgba(0,0,0,.46)}
+.card,.controls,.counts{border-radius:16px;border-color:rgba(235,220,180,.12);background:linear-gradient(145deg,rgba(31,39,45,.95),rgba(19,24,29,.97));box-shadow:inset 0 1px rgba(255,255,255,.04),0 10px 28px rgba(0,0,0,.24)}
+.big{color:#dfc989;text-shadow:none}.controls select{background:#182026;border-color:rgba(235,220,180,.16);color:#edf0f1}.ctrl{background:#1a2228;border-color:rgba(235,220,180,.14);color:#d9c78f}.ctrl:hover{border-color:rgba(235,220,180,.55);box-shadow:0 8px 22px rgba(0,0,0,.28)}
+.count b{font-size:27px;text-shadow:none}.count #cp{color:#aeb5bb}.count #cn{color:#c96b70}.count #ce{color:#6f9fc4}.count span{color:#818c94}
+@media(max-width:1000px){.info{width:240px;left:14px}.tools{right:14px}.panel{right:70px;width:calc(100% - 92px)}}
+@media(max-width:700px){.top{padding:0 14px}.brand{font-size:12px}.info{left:12px;width:185px}.tools{right:10px}.tool{width:43px;height:43px}.panel{left:10px;right:10px;width:auto}.bottom{grid-template-columns:1fr}}
+
+/* === NEW DESIGN: ORBITAL AURORA / REARRANGED UI === */
+:root{
+ --bg:#030812;--ink:#f3fbff;--cyan:#16e6ff;--cyan2:#a8f7ff;--violet:#8b7cff;
+ --panel:rgba(8,16,31,.82);--line:rgba(116,235,255,.20);
+ --shadow:0 24px 80px rgba(0,0,0,.58),0 0 55px rgba(22,230,255,.10)
+}
+html,body{background:#030812}
+body{background:
+ radial-gradient(circle at 18% 18%,rgba(139,124,255,.13),transparent 25%),
+ radial-gradient(circle at 82% 75%,rgba(22,230,255,.12),transparent 27%),
+ linear-gradient(135deg,#02050d,#06111f 48%,#020711)}
+body:after{opacity:.13;background-size:64px 64px}
+.app{grid-template-rows:82px 1fr 178px}
+.top{height:82px;padding:0 30px;background:rgba(3,8,18,.70);border-bottom:1px solid rgba(168,247,255,.13);box-shadow:0 12px 45px #0008}
+.brand{font-size:18px;letter-spacing:.20em;position:relative}
+.brand:before{width:5px;height:38px;background:linear-gradient(180deg,var(--cyan),var(--violet));box-shadow:0 0 24px var(--cyan);border-radius:4px}
+.brand small{color:#79a7b7;letter-spacing:.30em;font-size:9px}
+.actions{gap:10px}.icon{width:46px;height:46px;border-radius:15px;background:rgba(9,19,37,.82);border-color:rgba(168,247,255,.16)}
+.icon:hover{transform:translateY(-3px) scale(1.03)}
+.main{background:radial-gradient(circle at 50% 50%,rgba(22,230,255,.055),transparent 42%)}
+.main:before{left:30px;top:25px;color:#5d8294;content:"NGUYỄN ĐỨC TOÀN 10/2  //  CHEMISTRY CORE"}
+.main:after{right:30px;top:25px;color:#5d8294;content:"SYSTEM ONLINE  •  118 ELEMENTS  •  3D"}
+.grid{opacity:.32;background-size:52px 52px}
+.main .grid:before{width:min(58vw,620px);height:min(58vw,620px);border-color:rgba(22,230,255,.08);box-shadow:0 0 100px rgba(22,230,255,.07)}
+.main .grid:after{width:min(43vw,460px);height:min(43vw,460px);border-color:rgba(139,124,255,.14)}
+/* swap: controls/tool rail goes to the right */
+.tools{left:auto;right:26px;top:50%;gap:12px}
+.tool{width:54px;height:54px;border-radius:18px;background:linear-gradient(145deg,rgba(17,34,57,.94),rgba(6,12,25,.96));border-color:rgba(168,247,255,.18);box-shadow:0 18px 45px #0008,inset 0 1px rgba(255,255,255,.06)}
+.tool:first-child{border-color:rgba(22,230,255,.72);box-shadow:0 0 28px rgba(22,230,255,.16),0 18px 45px #0008}
+.tool:hover{transform:translateX(-5px) scale(1.04);border-color:var(--cyan);box-shadow:0 0 32px rgba(22,230,255,.25),0 18px 45px #0008}
+/* swap information card to the left */
+.info{left:26px;right:auto;top:62px;width:300px;padding:21px;border-radius:24px;background:linear-gradient(155deg,rgba(11,27,48,.88),rgba(4,10,21,.90));border-color:rgba(168,247,255,.18);box-shadow:var(--shadow),inset 0 0 45px rgba(139,124,255,.035)}
+.info:before{color:#68b8c7;content:"ACTIVE ELEMENT  /  ORBITAL DATA"}
+.symbol{font-size:72px;background:linear-gradient(135deg,#fff,var(--cyan2));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none}
+.name{color:#9ab5c3}.row{border-top-color:rgba(168,247,255,.08)}.row strong{color:#f0fdff}
+.config{border-color:rgba(168,247,255,.12);background:linear-gradient(135deg,rgba(22,230,255,.045),rgba(139,124,255,.045));color:#a5eff7}
+/* table panel now opens as a right-side drawer */
+.panel{left:auto;right:92px;top:28px;width:min(1220px,calc(100% - 150px));max-height:calc(100% - 56px);border-radius:28px;background:linear-gradient(145deg,rgba(8,18,34,.97),rgba(3,9,18,.98));border-color:rgba(168,247,255,.20);box-shadow:0 30px 100px #000b,0 0 70px rgba(22,230,255,.08)}
+.panel.show{animation:drawerIn .25s ease both}@keyframes drawerIn{from{opacity:0;transform:translateX(24px) scale(.985)}to{opacity:1;transform:none}}
+.tableHead h2{letter-spacing:.02em}.tableHead p{color:#7195a3}
+.el{border-radius:12px;background-blend-mode:screen;box-shadow:inset 0 0 22px rgba(255,255,255,.025)}
+.el:hover{transform:translateY(-5px) scale(1.035);box-shadow:0 16px 34px #000b,0 0 22px rgba(22,230,255,.18)}
+.el.active{box-shadow:0 0 0 2px rgba(22,230,255,.58),0 0 32px rgba(22,230,255,.23);background-image:linear-gradient(135deg,rgba(22,230,255,.20),rgba(139,124,255,.14))}
+/* bottom layout is intentionally reversed */
+.bottom{grid-template-columns:320px 1fr 255px;gap:14px;padding:14px 22px 16px;background:linear-gradient(180deg,rgba(4,10,20,.94),rgba(2,6,13,.99));border-top-color:rgba(168,247,255,.13)}
+.counts{grid-column:1;grid-row:1}.controls{grid-column:2;grid-row:1}.card{grid-column:3;grid-row:1;flex-direction:row-reverse;justify-content:flex-start;text-align:right}
+.card,.controls,.counts{border-radius:20px;background:linear-gradient(145deg,rgba(10,24,42,.90),rgba(4,10,20,.96));border-color:rgba(168,247,255,.14);box-shadow:inset 0 0 35px rgba(22,230,255,.025),0 12px 40px #0007}
+.counts{display:flex;align-items:center;justify-content:space-around;padding:9px}
+.count{min-width:0;text-align:center;position:relative}.count:not(:last-child):after{content:"";position:absolute;right:-20px;top:12%;height:76%;width:1px;background:rgba(168,247,255,.09)}
+.count b{font-size:27px;color:#e9fbff;text-shadow:0 0 18px rgba(22,230,255,.18)}
+.count span{display:block;font-size:8px;letter-spacing:.14em;color:#6d98a6;margin-top:4px}
+.controls{justify-content:center}.controls select{min-width:220px;background:#061222;color:#eafcff;border-color:rgba(168,247,255,.16)}
+.ctrl{background:#071426;border-color:rgba(168,247,255,.14);color:#aaf6ff;border-radius:12px}.ctrl:hover{border-color:var(--cyan);box-shadow:0 0 20px rgba(22,230,255,.12)}
+.card .big{color:var(--cyan);text-shadow:0 0 25px rgba(22,230,255,.3)}
+.hint{bottom:16px;background:rgba(3,10,19,.76);border-color:rgba(168,247,255,.12);color:#668b98}
+@media(max-width:1000px){.info{width:240px;left:14px}.tools{right:14px}.panel{right:70px;width:calc(100% - 92px)}.bottom{grid-template-columns:1fr 1fr}.counts{grid-column:1}.controls{grid-column:2}.card{grid-column:1/-1;grid-row:2}}
+@media(max-width:700px){.app{grid-template-rows:66px 1fr 220px}.top{height:66px;padding:0 14px}.brand{font-size:12px;letter-spacing:.12em}.brand small{font-size:7px;letter-spacing:.18em}.actions .icon{width:40px;height:40px}.info{left:12px;top:54px;width:185px;padding:13px;border-radius:17px}.symbol{font-size:48px}.tools{right:10px}.tool{width:43px;height:43px;border-radius:14px}.panel{left:10px;right:10px;top:18px;width:auto;max-height:calc(100% - 36px);padding:15px}.bottom{grid-template-columns:1fr;grid-template-rows:auto auto auto;padding:10px}.counts,.controls,.card{grid-column:1;grid-row:auto}.counts{min-height:62px}.controls{flex-wrap:wrap}.card{flex-direction:row;text-align:left}.hint{max-width:70%;font-size:8px}}
+
+/* PREMIUM BLUE FINAL */
+:root{--bg:#f5f8fc;--ink:#102a43;--accent:#1769aa;--accent2:#4b9bd1;--panel:#fff;--line:#d9e5ef;--muted:#6b7f91;--red:#c95757;--gray:#7c8790;--blue:#2b80bd;--shadow:0 18px 50px rgba(26,62,90,.12)}
+html,body{background:var(--bg);color:var(--ink)}
+body{background:radial-gradient(circle at 50% 35%,#fff 0,#f4f8fc 55%,#eaf2f8 100%)}
+body:before{background:radial-gradient(circle at 50% 45%,rgba(23,105,170,.07),transparent 35%)}
+body:after{opacity:.06;background-image:linear-gradient(#1769aa 1px,transparent 1px),linear-gradient(90deg,#1769aa 1px,transparent 1px);background-size:56px 56px}
+.top{background:rgba(255,255,255,.92);border-bottom:1px solid #dce7f0;box-shadow:0 8px 30px rgba(27,65,94,.08)}
+.brand{color:#173b5b}.brand:before{background:#1769aa;box-shadow:none}.brand small{color:#7890a3}
+.icon,.tool,.ctrl{background:#fff;color:#1769aa;border-color:#d4e2ed;box-shadow:0 6px 18px rgba(29,73,105,.08)}
+.icon:hover,.tool:hover,.ctrl:hover{border-color:#7eb2d6;box-shadow:0 10px 25px rgba(23,105,170,.12)}
+.main{background:transparent}#scene{background:radial-gradient(circle at 50% 48%,#fff 0,#f1f7fb 43%,#e5eef5 100%)}
+.grid{opacity:.22;background-image:linear-gradient(rgba(23,105,170,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(23,105,170,.07) 1px,transparent 1px)}
+.main .grid:before{border-color:rgba(23,105,170,.12);box-shadow:0 0 70px rgba(23,105,170,.05),inset 0 0 70px rgba(23,105,170,.025)}
+.main .grid:after{border-color:rgba(23,105,170,.12)}
+.main:before,.main:after{color:#8094a5}
+.info{left:26px;right:auto;top:60px;width:292px;background:rgba(255,255,255,.94);border:1px solid #d8e5ef;box-shadow:var(--shadow);backdrop-filter:blur(16px)}
+.info:before{color:#66839a}.symbol{color:#123e61;text-shadow:none}.name{color:#6b8193}.row{border-top-color:#e7eef4}.row strong{color:#173b5b}.config{background:#f5f9fc;border-color:#dce8f0;color:#1769aa}
+.tools{left:auto;right:24px}.tool{border-radius:14px}.tool:first-child{border-color:#8eb8d4}
+.hint{background:rgba(255,255,255,.9);border-color:#d8e5ef;color:#718799;box-shadow:0 8px 24px rgba(31,72,102,.08)}
+.panel{left:auto;right:86px;top:28px;width:min(1220px,calc(100% - 140px));background:rgba(255,255,255,.97);border-color:#d7e4ee;box-shadow:0 25px 70px rgba(30,68,98,.16)}
+.panel h2{color:#173b5b}.tableHead p,.legend span,.groupLabels span{color:#718799}
+.el{border-color:#d7e4ee;background:#fff!important;color:#183a56;box-shadow:0 4px 12px rgba(31,72,102,.06)}
+.el:hover{border-color:#72a8cc;box-shadow:0 10px 22px rgba(31,72,102,.12)}.el.active{border-color:#1769aa;box-shadow:0 0 0 2px rgba(23,105,170,.13),0 10px 24px rgba(31,72,102,.12)}
+.el .z{color:#6e8495}.el small{color:#72879a}
+.el.cat-alkali{background:#eaf4fb!important}.el.cat-alkaline{background:#eef7fb!important}.el.cat-transition{background:#edf7f3!important}.el.cat-post{background:#faf6e9!important}.el.cat-metalloid{background:#f8f0eb!important}.el.cat-nonmetal{background:#faeeee!important}.el.cat-halogen{background:#f7eef7!important}.el.cat-noble{background:#f1eff8!important}.el.cat-f{background:#edf7f1!important}
+.placeholder{border-color:#b8ccda;background:#f6f9fb;color:#7890a0}
+.bottom{background:rgba(255,255,255,.94);border-top:1px solid #dce7f0;box-shadow:0 -12px 35px rgba(31,72,102,.08)}
+.card,.controls,.counts{background:#fff;border-color:#d8e5ef;box-shadow:0 8px 22px rgba(31,72,102,.07)}
+.big{color:#1769aa;text-shadow:none}.muted,.speed,.count span{color:#7890a0}.controls:before{color:#7890a0}
+select{background:#f8fbfd;color:#173b5b;border-color:#d2e1eb}select:focus{border-color:#78a9ca;box-shadow:none}.count #ce{color:#287fbd;text-shadow:none}.count #cn{color:#c95757;text-shadow:none}.count #cp{color:#7d8994;text-shadow:none}
+@media(max-width:900px){.info{left:12px;top:46px;width:205px}.tools{right:10px}.panel{left:50px;right:50px;width:auto}}
+</style>
+
+<style>
+/* ===== CLEAN WHITE / BLUE REDESIGN ===== */
+:root{--bg:#eef4f9;--ink:#16324a;--accent:#1769aa;--accent2:#3c8dcc;--line:#d7e3ed;--muted:#718397;--panel:#fff;--soft:#f6f9fc;--red:#c95c63;--gray:#7d8994;--blue:#287fbd;--shadow:0 18px 50px rgba(30,65,95,.12)}
+html,body{background:var(--bg);color:var(--ink)}
+body{background:linear-gradient(135deg,#f8fbfe 0%,#edf4f9 52%,#e6f0f7 100%);font-family:Inter,Segoe UI,Arial,sans-serif}
+body:before{background:radial-gradient(circle at 50% 38%,rgba(60,141,204,.12),transparent 34%),radial-gradient(circle at 5% 95%,rgba(23,105,170,.07),transparent 28%)}
+body:after{opacity:.28;background-image:linear-gradient(rgba(44,104,151,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(44,104,151,.055) 1px,transparent 1px);background-size:54px 54px;mask-image:radial-gradient(circle at center,#000 0,#000 68%,transparent 100%)}
+.app{grid-template-rows:74px 1fr 150px}
+.top{padding:0 28px;background:rgba(255,255,255,.88);border-bottom:1px solid var(--line);box-shadow:0 8px 28px rgba(36,73,102,.08);backdrop-filter:blur(18px)}
+.brand{font-size:17px;letter-spacing:.11em;color:#153a58}.brand:before{width:5px;height:32px;background:var(--accent);box-shadow:none;border-radius:4px}.brand small{color:#7b8da0;letter-spacing:.22em}
+.icon{width:42px;height:42px;border-radius:12px;background:#fff;border:1px solid var(--line);color:var(--accent);box-shadow:0 5px 16px rgba(40,80,110,.07)}.icon:hover{border-color:#9fc3df;background:#f4f9fd;color:#0d548d;box-shadow:0 8px 22px rgba(40,80,110,.12);transform:translateY(-2px)}
+.main{background:radial-gradient(circle at 50% 48%,rgba(60,141,204,.08),transparent 48%)}
+#scene{background:radial-gradient(circle at 50% 48%,rgba(255,255,255,.98),rgba(239,247,252,.98) 46%,rgba(224,237,246,.98) 100%)}
+.grid{opacity:.48;background-size:52px 52px;background-image:linear-gradient(rgba(53,111,154,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(53,111,154,.055) 1px,transparent 1px)}
+.main .grid:before{width:min(54vw,560px);height:min(54vw,560px);border-color:rgba(23,105,170,.12);box-shadow:0 0 80px rgba(36,107,153,.06),inset 0 0 70px rgba(36,107,153,.025)}
+.main .grid:after{width:min(39vw,405px);height:min(39vw,405px);border-color:rgba(23,105,170,.12);animation:spin 30s linear infinite}
+.main:before{content:"NGUYỄN ĐỨC TOÀN 10/2  ·  CHEMISTRY LAB";left:28px;top:22px;color:#7990a3;font:800 9px ui-monospace,monospace;letter-spacing:.14em}.main:after{content:"118 ELEMENTS  ·  3D ATOM";right:28px;top:22px;color:#7990a3;font:800 9px ui-monospace,monospace;letter-spacing:.12em}
+.tools{left:24px;right:auto;top:50%;gap:9px}.tool{width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,.92);border:1px solid #d5e2ec;color:#286d9f;box-shadow:0 10px 25px rgba(32,73,104,.10)}.tool:first-child{border-color:#9dc5e2;box-shadow:0 10px 25px rgba(32,73,104,.10)}.tool:hover{transform:translateX(4px);border-color:#8fb9d7;color:#145b8f;box-shadow:0 13px 28px rgba(32,73,104,.15)}
+.info{left:auto;right:24px;top:56px;width:292px;padding:20px;border-radius:20px;background:rgba(255,255,255,.94);border:1px solid var(--line);box-shadow:var(--shadow);backdrop-filter:blur(18px)}.info:before{content:"ACTIVE ELEMENT  /  ORBITAL DATA";color:#7890a4}.symbol{font-size:66px;color:#145b8f;text-shadow:none}.name{color:#70869a;margin-bottom:14px}.row{border-top:1px solid #e8eef3;color:#7890a1}.row strong{color:#24465f}.config{border:1px solid #dce7ef;background:#f5f9fc;color:#286b99}
+.hint{bottom:14px;background:rgba(255,255,255,.88);border:1px solid #d8e4ed;color:#71879a;box-shadow:0 8px 24px rgba(32,73,104,.08)}
+.panel{left:24px;right:24px;top:26px;width:auto;max-height:calc(100% - 52px);padding:22px;border-radius:22px;background:rgba(255,255,255,.97);border:1px solid #d6e3ec;box-shadow:0 24px 65px rgba(30,68,98,.16);backdrop-filter:blur(18px)}.panel h2{color:#183d59}.tableHead p{color:#74899b}.legend span,.groupLabels span{color:#71869a}
+.periodic{gap:6px}.el{border-radius:10px;border:1px solid #dbe5ed;color:#23445c;background:#f7fafc;box-shadow:0 4px 12px rgba(39,77,105,.055)}.el:after{background:linear-gradient(135deg,rgba(255,255,255,.75),transparent 52%)}.el:hover{transform:translateY(-3px) scale(1.025);z-index:5;border-color:#7fb1d5;box-shadow:0 12px 24px rgba(35,78,108,.14)}.el.active{border-color:#3b87bb;box-shadow:0 0 0 2px rgba(59,135,187,.16),0 12px 24px rgba(35,78,108,.12);transform:translateY(-2px)}
+.el.cat-alkali{background:linear-gradient(145deg,#eaf4fb,#dcecf7)}.el.cat-alkaline{background:linear-gradient(145deg,#eef7fb,#e1f0f7)}.el.cat-transition{background:linear-gradient(145deg,#edf7f3,#e0eee8)}.el.cat-post{background:linear-gradient(145deg,#faf6e9,#f2ebd2)}.el.cat-metalloid{background:linear-gradient(145deg,#fbf1eb,#f1e3da)}.el.cat-nonmetal{background:linear-gradient(145deg,#fbeced,#f4dde0)}.el.cat-halogen{background:linear-gradient(145deg,#f7edf7,#ecdeec)}.el.cat-noble{background:linear-gradient(145deg,#f1eef8,#e4dff0)}.el.cat-f{background:linear-gradient(145deg,#edf7f1,#dfeee5)}
+.alkali{background:#5f9dcc}.alkaline{background:#78aac8}.transition{background:#72a58f}.post{background:#c8ae68}.metalloid{background:#b7896e}.nonmetal{background:#ca777d}.halogen{background:#a883a8}.noble{background:#8d82ad}.fblock{background:#72a787}.placeholder{border-color:#c8d8e3;background:#f2f7fa;color:#7890a0}
+.bottom{grid-template-columns:260px 1fr 310px;gap:12px;padding:12px 18px 14px;background:rgba(255,255,255,.92);border-top:1px solid #d7e3ec;box-shadow:0 -12px 35px rgba(36,72,100,.08)}.card,.controls,.counts{border:1px solid #d9e5ed;background:#fff;border-radius:17px;box-shadow:0 8px 24px rgba(36,72,100,.07)}.card{padding:11px 14px}.big{font-size:36px;color:#1769aa;text-shadow:none}.muted,.speed,.count span{color:#7a8d9f}.controls{padding:11px}.controls:before{color:#7d91a3}.controls select,.ctrl{background:#f8fbfd;border:1px solid #d7e4ed;color:#28536f}.controls select{min-width:210px}.ctrl:hover{border-color:#8eb7d5;background:#f0f7fb;box-shadow:none}select,input[type=range]{accent-color:var(--accent)}.count b{font-size:24px}.count #cp{color:var(--gray);text-shadow:none}.count #cn{color:var(--red);text-shadow:none}.count #ce{color:var(--blue);text-shadow:none}.count:not(:last-child):after{background:#e3ebf1}
+@media(max-width:900px){.app{grid-template-rows:62px 1fr 190px}.top{padding:0 14px}.info{right:10px;left:auto;top:46px;width:205px}.tools{left:10px}.main:before{left:15px}.panel{left:10px;right:10px}.bottom{grid-template-columns:1fr 1fr}.card,.controls,.counts{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top"><div class="brand">NGUYỄN ĐỨC TOÀN 10/2 <small>BẢNG TUẦN HOÀN HÓA HỌC</small></div><div class="actions"><button class="icon" id="reset">↻</button><button class="icon" id="pause">Ⅱ</button></div></header>
+<main class="main">
+<canvas id="scene"></canvas><div class="grid"></div>
+<div class="tools"><button class="tool" id="atomBtn">◉</button><button class="tool" id="tableBtn">▦</button><button class="tool" id="aboutBtn">i</button></div>
+<section class="panel tablePanel" id="tablePanel">
+      <div class="tableHead">
+        <div><h2>Bảng tuần hoàn các nguyên tố</h2><p>118 nguyên tố · 18 nhóm · 7 chu kỳ</p></div>
+        <div class="legend">
+          <span><i class="alkali"></i>Kim loại kiềm</span><span><i class="alkaline"></i>Kiềm thổ</span>
+          <span><i class="transition"></i>Kim loại chuyển tiếp</span><span><i class="post"></i>Kim loại sau chuyển tiếp</span>
+          <span><i class="metalloid"></i>Á kim</span><span><i class="nonmetal"></i>Phi kim</span>
+          <span><i class="halogen"></i>Halogen</span><span><i class="noble"></i>Khí hiếm</span><span><i class="fblock"></i>Họ Lantan/Actini</span>
+        </div>
+      </div>
+      <div class="groupLabels" id="groupLabels"></div>
+      <div class="periodic" id="periodic"></div>
+    </section>
+<section class="panel" id="aboutPanel"><h2>Nguyên tử 3D</h2><p>Chọn bất kỳ nguyên tố nào để xem mô hình nguyên tử 3D. Kéo chuột để xoay và cuộn để zoom.</p><p>Electron <b style="color:#4fdcff">xanh dương</b> · Proton <b style="color:#9aa3a8">xám</b> · Neutron <b style="color:#ff4f5f">đỏ</b>.</p></section>
+<aside class="info"><div class="symbol" id="symbol">H</div><div class="name" id="name">Hydrogen</div>
+<div class="row"><span>Số hiệu nguyên tử</span><strong id="z">1</strong></div><div class="row"><span>Khối lượng nguyên tử</span><strong id="mass">1.008</strong></div><div class="row"><span>Proton</span><strong id="p">1</strong></div><div class="row"><span>Neutron ≈</span><strong id="n">0</strong></div><div class="row"><span>Electron</span><strong id="e">1</strong></div><div class="row"><span>Lớp electron</span><strong id="shells">1</strong></div><div class="row"><span>Công dụng</span><strong id="uses">—</strong></div><div class="config" id="config"></div></aside>
+<div class="hint" id="hint">Kéo để xoay 3D · Cuộn để zoom · Bấm ▦ để mở đủ 118 nguyên tố</div>
+</main>
+<footer class="bottom"><div class="card"><div class="big" id="mini">H</div><div><b id="cardName">Hydrogen</b><div class="muted">Mô hình nguyên tử 3D</div></div></div>
+<div class="controls"><select id="select"></select><button class="ctrl" id="minus">−</button><button class="ctrl" id="plus">+</button><span class="speed">Tốc độ</span><input class="range" id="speed" type="range" min="0" max="3" step=".05" value="1"><button class="ctrl" id="auto">⟳</button></div>
+<div class="counts"><div class="count"><b id="cp">1</b><span>PROTON</span></div><div class="count"><b id="cn">0</b><span>NEUTRON</span></div><div class="count"><b id="ce">1</b><span>ELECTRON</span></div></div></footer>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script>
+const E=[['H','Hydrogen',1,1.008],['He','Helium',2,4.003],['Li','Lithium',3,6.94],['Be','Beryllium',4,9.012],['B','Boron',5,10.81],['C','Carbon',6,12.011],['N','Nitrogen',7,14.007],['O','Oxygen',8,15.999],['F','Fluorine',9,18.998],['Ne','Neon',10,20.18],['Na','Sodium',11,22.99],['Mg','Magnesium',12,24.305],['Al','Aluminium',13,26.982],['Si','Silicon',14,28.085],['P','Phosphorus',15,30.974],['S','Sulfur',16,32.06],['Cl','Chlorine',17,35.45],['Ar','Argon',18,39.948],['K','Potassium',19,39.098],['Ca','Calcium',20,40.078],['Sc','Scandium',21,44.956],['Ti','Titanium',22,47.867],['V','Vanadium',23,50.942],['Cr','Chromium',24,51.996],['Mn','Manganese',25,54.938],['Fe','Iron',26,55.845],['Co','Cobalt',27,58.933],['Ni','Nickel',28,58.693],['Cu','Copper',29,63.546],['Zn','Zinc',30,65.38],['Ga','Gallium',31,69.723],['Ge','Germanium',32,72.63],['As','Arsenic',33,74.922],['Se','Selenium',34,78.971],['Br','Bromine',35,79.904],['Kr','Krypton',36,83.798],['Rb','Rubidium',37,85.468],['Sr','Strontium',38,87.62],['Y','Yttrium',39,88.906],['Zr','Zirconium',40,91.224],['Nb','Niobium',41,92.906],['Mo','Molybdenum',42,95.95],['Tc','Technetium',43,98],['Ru','Ruthenium',44,101.07],['Rh','Rhodium',45,102.906],['Pd','Palladium',46,106.42],['Ag','Silver',47,107.868],['Cd','Cadmium',48,112.414],['In','Indium',49,114.818],['Sn','Tin',50,118.71],['Sb','Antimony',51,121.76],['Te','Tellurium',52,127.6],['I','Iodine',53,126.904],['Xe','Xenon',54,131.293],['Cs','Cesium',55,132.905],['Ba','Barium',56,137.327],['La','Lanthanum',57,138.905],['Ce','Cerium',58,140.116],['Pr','Praseodymium',59,140.908],['Nd','Neodymium',60,144.242],['Pm','Promethium',61,145],['Sm','Samarium',62,150.36],['Eu','Europium',63,151.964],['Gd','Gadolinium',64,157.25],['Tb','Terbium',65,158.925],['Dy','Dysprosium',66,162.5],['Ho','Holmium',67,164.93],['Er','Erbium',68,167.259],['Tm','Thulium',69,168.934],['Yb','Ytterbium',70,173.045],['Lu','Lutetium',71,174.967],['Hf','Hafnium',72,178.49],['Ta','Tantalum',73,180.948],['W','Tungsten',74,183.84],['Re','Rhenium',75,186.207],['Os','Osmium',76,190.23],['Ir','Iridium',77,192.217],['Pt','Platinum',78,195.084],['Au','Gold',79,196.967],['Hg','Mercury',80,200.592],['Tl','Thallium',81,204.38],['Pb','Lead',82,207.2],['Bi','Bismuth',83,208.98],['Po','Polonium',84,209],['At','Astatine',85,210],['Rn','Radon',86,222],['Fr','Francium',87,223],['Ra','Radium',88,226],['Ac','Actinium',89,227],['Th','Thorium',90,232.038],['Pa','Protactinium',91,231.036],['U','Uranium',92,238.029],['Np','Neptunium',93,237],['Pu','Plutonium',94,244],['Am','Americium',95,243],['Cm','Curium',96,247],['Bk','Berkelium',97,247],['Cf','Californium',98,251],['Es','Einsteinium',99,252],['Fm','Fermium',100,257],['Md','Mendelevium',101,258],['No','Nobelium',102,259],['Lr','Lawrencium',103,266],['Rf','Rutherfordium',104,267],['Db','Dubnium',105,268],['Sg','Seaborgium',106,269],['Bh','Bohrium',107,270],['Hs','Hassium',108,277],['Mt','Meitnerium',109,278],['Ds','Darmstadtium',110,281],['Rg','Roentgenium',111,282],['Cn','Copernicium',112,285],['Nh','Nihonium',113,286],['Fl','Flerovium',114,289],['Mc','Moscovium',115,290],['Lv','Livermorium',116,293],['Ts','Tennessine',117,294],['Og','Oganesson',118,294]];
+const $=id=>document.getElementById(id);
+let idx=0,paused=false,auto=true,speed=1,rx=.25,ry=0,zoom=1,drag=false,lx=0,ly=0;
+let scene,camera,renderer,root,electrons=[];
+const caps=[2,8,18,32,32,18,8];
+function shells(z){let out=[],n=z;for(const c of caps){let q=Math.min(c,n);if(q)out.push(q);n-=q;if(!n)break}return out}
+function init(){
+ try{
+  if(typeof THREE==='undefined') throw new Error('Three.js chưa tải được');
+  scene=new THREE.Scene();camera=new THREE.PerspectiveCamera(45,1,.1,100);camera.position.z=8;
+  renderer=new THREE.WebGLRenderer({canvas:$('scene'),antialias:true,alpha:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setClearColor(0x000000,0);
+  scene.add(new THREE.AmbientLight(0xffffff,1.8));let dl=new THREE.DirectionalLight(0xffffff,3.2);dl.position.set(4,5,8);scene.add(dl);
+  root=new THREE.Group();scene.add(root);resize();build();animate();
+ }catch(err){
+  console.error(err);
+  $('hint').textContent='Không tải được 3D. Đang dùng mô hình dự phòng.';
+  fallback2D();
+ }
+}
+function fallback2D(){
+ const c=$('scene'),ctx=c.getContext('2d'); if(!ctx)return;
+ let t0=performance.now(), angle=0;
+ function draw(){requestAnimationFrame(draw);let w=c.width=c.clientWidth*devicePixelRatio,h=c.height=c.clientHeight*devicePixelRatio;ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);w=c.clientWidth;h=c.clientHeight;ctx.clearRect(0,0,w,h);
+  const cx=w/2,cy=h/2,r0=Math.min(w,h)*.055; angle+=(paused?0:.01*speed);
+  ctx.save();ctx.translate(cx,cy);
+  const z=E[idx][2],sh=shells(z);
+  ctx.globalAlpha=.34;sh.forEach((_,i)=>{let r=90+i*55;ctx.beginPath();ctx.ellipse(0,0,r,r*.42,angle*.15+i*.4,0,Math.PI*2);ctx.strokeStyle='#4fdcff';ctx.lineWidth=1.5;ctx.stroke()});
+  for(let i=0;i<z;i++){let a=i*2.4,rr=r0*.72*Math.sqrt((i+1)/Math.max(z,1));ctx.beginPath();ctx.arc(Math.cos(a)*rr,Math.sin(a)*rr,5,0,Math.PI*2);ctx.fillStyle='#4fdcff';ctx.fill()}
+  const n=Math.max(0,Math.round(E[idx][3])-z);for(let i=0;i<n;i++){let a=i*2.4+.7,rr=r0*.66*Math.sqrt((i+1)/Math.max(n,1));ctx.beginPath();ctx.arc(Math.cos(a)*rr,Math.sin(a)*rr,5,0,Math.PI*2);ctx.fillStyle='#ff4f5f';ctx.fill()}
+  ctx.globalAlpha=1;ctx.beginPath();ctx.arc(0,0,Math.max(22,r0),0,Math.PI*2);ctx.fillStyle='rgba(255,79,95,.12)';ctx.fill();ctx.strokeStyle='rgba(255,79,95,.4)';ctx.stroke();
+  sh.forEach((count,i)=>{let r=90+i*55;for(let j=0;j<count;j++){let a=angle*(.5+i*.08)+j*Math.PI*2/count, x=Math.cos(a)*r, y=Math.sin(a)*r*.42;ctx.beginPath();ctx.arc(x,y,6,0,Math.PI*2);ctx.fillStyle='#4fdcff';ctx.fill()}});
+  ctx.restore();
+ } draw();
+}
+
+function build(){
+ while(root.children.length)root.remove(root.children[0]);electrons=[];
+ const [sym,name,z,mass]=E[idx],sh=shells(z);let coreR=Math.min(.62,.34+Math.sqrt(z)*.022);
+ let pc=Math.min(z,32),nc=Math.min(Math.max(0,Math.round(mass)-z),40);
+ for(let i=0;i<pc;i++){let a=i*2.399,r=coreR*.72*Math.sqrt((i+1)/pc),q=new THREE.Mesh(new THREE.SphereGeometry(.075,16,12),new THREE.MeshStandardMaterial({color:0x9aa3a8,emissive:0x9aa3a8,emissiveIntensity:.12}));q.position.set(Math.cos(a)*r,Math.sin(a)*r,(i%3-.9)*.08);root.add(q)}
+ for(let i=0;i<nc;i++){let a=i*2.399+.7,r=coreR*.66*Math.sqrt((i+1)/Math.max(nc,1)),q=new THREE.Mesh(new THREE.SphereGeometry(.07,16,12),new THREE.MeshBasicMaterial({color:0xff4f5f}));q.position.set(Math.cos(a)*r,Math.sin(a)*r,(i%4-1.5)*.07);root.add(q)}
+ root.add(new THREE.Mesh(new THREE.SphereGeometry(coreR,32,24),new THREE.MeshBasicMaterial({color:0xff5864,transparent:true,opacity:.12})));
+ sh.forEach((count,s)=>{let r=1.15+s*.55,ring=new THREE.Mesh(new THREE.TorusGeometry(r,.012,8,96),new THREE.MeshBasicMaterial({color:0x62e4f4,transparent:true,opacity:.42}));ring.rotation.set(s%2?.75:-.55,s%3?.25:0,0);root.add(ring);
+ for(let i=0;i<count;i++){let em=new THREE.Mesh(new THREE.SphereGeometry(.07,16,12),new THREE.MeshBasicMaterial({color:0x4fdcff}));em.userData={r,phase:i*Math.PI*2/count,tilt:ring.rotation.x,az:ring.rotation.y,shell:s};root.add(em);electrons.push(em)}});
+ update();$('select').value=idx;resize()
+}
+function update(){
+ const [sym,name,z,mass]=E[idx],sh=shells(z),ne=Math.max(0,Math.round(mass)-z);
+ $('symbol').textContent=sym;$('name').textContent=name;$('z').textContent=z;$('mass').textContent=mass;$('uses').textContent=USES[sym]||'Nghiên cứu và ứng dụng chuyên ngành';$('p').textContent=z;$('n').textContent=ne;$('e').textContent=z;$('shells').textContent=sh.length;$('mini').textContent=sym;$('cardName').textContent=name;$('cp').textContent=z;$('cn').textContent=ne;$('ce').textContent=z;$('config').textContent=electronConfig(z)
+}
+
+const USES = {
+H:"Nhiên liệu, amoniac, pin nhiên liệu và công nghiệp hóa chất",
+He:"Bóng bay, khí bảo vệ, MRI và làm lạnh sâu",
+Li:"Pin lithium-ion, thủy tinh, gốm và hợp kim",
+Be:"Hàng không vũ trụ, cửa sổ tia X và hợp kim đồng",
+B:"Thủy tinh borosilicat, chất tẩy rửa, vật liệu và bán dẫn",
+C:"Thép, than hoạt tính, điện cực, graphene và vật liệu carbon",
+N:"Sản xuất amoniac, phân bón, bảo quản thực phẩm và khí trơ",
+O:"Hô hấp y tế, luyện kim, hàn cắt và xử lý nước",
+F:"Kem đánh răng (fluoride), hóa chất fluor và vật liệu đặc biệt",
+Ne:"Đèn neon, biển hiệu và laser",
+Na:"Muối, hóa chất, đèn hơi natri và chất truyền nhiệt",
+Mg:"Hợp kim nhẹ, pháo sáng, ô tô và luyện kim",
+Al:"Đồ gia dụng, xây dựng, máy bay, dây dẫn điện và bao bì",
+Si:"Chip bán dẫn, pin mặt trời, thủy tinh và silicone",
+P:"Phân bón, diêm, hóa chất và chất chống cháy",
+S:"Axit sulfuric, phân bón, cao su và hóa chất",
+Cl:"Khử trùng nước, PVC, chất tẩy và hóa chất",
+Ar:"Hàn hồ quang, bóng đèn và môi trường khí trơ",
+K:"Phân bón, thủy tinh và hóa chất",
+Ca:"Xi măng, vôi, luyện kim và bổ sung canxi",
+Sc:"Hợp kim nhôm, đèn chiếu sáng và vật liệu đặc biệt",
+Ti:"Hợp kim hàng không, implant y tế, sơn TiO₂",
+V:"Thép hợp kim, dụng cụ và xúc tác",
+Cr:"Thép không gỉ, mạ crom và pigment",
+Mn:"Thép, pin và chất oxy hóa",
+Fe:"Thép, xây dựng, máy móc và nam châm",
+Co:"Pin, siêu hợp kim, nam châm và xúc tác",
+Ni:"Thép không gỉ, mạ, pin và xúc tác",
+Cu:"Dây điện, điện tử, ống và hợp kim đồng",
+Zn:"Mạ chống ăn mòn, pin, đồng thau và đúc",
+Ga:"LED, bán dẫn và nhiệt kế",
+Ge:"Bán dẫn, sợi quang và quang điện",
+As:"Bán dẫn, hợp kim và một số ứng dụng công nghiệp",
+Se:"Tế bào quang điện, kính và điện tử",
+Br:"Chất chống cháy, hóa chất và xử lý nước",
+Kr:"Đèn chiếu sáng, laser và khí cách điện",
+Rb:"Nghiên cứu, đồng hồ nguyên tử và thiết bị chân không",
+Sr:"Pháo hoa đỏ, vật liệu quang học và gốm",
+Y:"LED, laser, gốm và vật liệu siêu dẫn",
+Zr:"Hạt nhân, gốm và hợp kim chống ăn mòn",
+Nb:"Siêu hợp kim, thép và nam châm siêu dẫn",
+Mo:"Thép hợp kim, xúc tác và điện cực",
+Tc:"Chẩn đoán y học hạt nhân",
+Ru:"Điện tử, xúc tác và hợp kim",
+Rh:"Xúc tác ô tô, mạ và hợp kim",
+Pd:"Xúc tác, điện tử và lọc khí",
+Ag:"Trang sức, điện tử, gương và vật liệu kháng khuẩn",
+Cd:"Pin Ni-Cd, pigment và lớp phủ (hạn chế do độc tính)",
+In:"Màn hình cảm ứng, bán dẫn và hợp kim",
+Sn:"Hàn, mạ thiếc, hợp kim và bao bì",
+Sb:"Chất chống cháy, hợp kim và bán dẫn",
+Te:"Bán dẫn, hợp kim và vật liệu nhiệt điện",
+I:"Sát trùng, y tế và dinh dưỡng vi lượng",
+Xe:"Đèn flash, đèn pha, laser và gây mê chuyên dụng",
+Cs:"Đồng hồ nguyên tử, nghiên cứu và thiết bị chân không",
+Ba:"Pháo hoa xanh, khoan dầu và chất cản quang y tế",
+La:"Kính quang học, xúc tác và pin",
+Ce:"Đánh bóng kính, xúc tác và hợp kim",
+Pr:"Nam châm, kính màu và vật liệu quang học",
+Nd:"Nam châm mạnh, laser và động cơ điện",
+Pm:"Nghiên cứu và nguồn phóng xạ chuyên dụng",
+Sm:"Nam châm, lò phản ứng và laser",
+Eu:"Phosphor màn hình, đèn và bảo mật tiền giấy",
+Gd:"MRI, vật liệu từ và lò phản ứng",
+Tb:"Phosphor xanh, thiết bị điện tử và nam châm",
+Dy:"Nam châm mạnh và vật liệu laser",
+Ho:"Laser, nam châm và nghiên cứu vật liệu",
+Er:"Sợi quang, laser và kính màu",
+Tm:"Nguồn tia X di động và laser",
+Yb:"Laser, sợi quang và nghiên cứu",
+Lu:"Xúc tác, y học hạt nhân và vật liệu",
+Hf:"Lò phản ứng, siêu hợp kim và điện tử",
+Ta:"Tụ điện, dụng cụ y tế và siêu hợp kim",
+W:"Dây tóc bóng đèn, dụng cụ cắt và hợp kim chịu nhiệt",
+Re:"Siêu hợp kim động cơ phản lực và xúc tác",
+Os:"Hợp kim cứng, đầu bút và xúc tác",
+Ir:"Bugi, hợp kim và thiết bị chịu nhiệt",
+Pt:"Xúc tác ô tô, trang sức, điện tử và y tế",
+Au:"Trang sức, điện tử, nha khoa và đầu tư",
+Hg:"Thiết bị đo cũ, công tắc và hóa chất (độc, hạn chế)",
+Tl:"Điện tử, cảm biến và nghiên cứu (độc)",
+Pb:"Ắc quy chì, chắn bức xạ và hợp kim (độc)",
+Bi:"Dược phẩm, hợp kim nóng chảy và mỹ phẩm",
+Po:"Nguồn nhiệt phóng xạ và nghiên cứu (phóng xạ)",
+At:"Nghiên cứu y học hạt nhân (phóng xạ)",
+Rn:"Nghiên cứu phóng xạ; không dùng dân dụng do nguy hiểm",
+Fr:"Nghiên cứu cơ bản (phóng xạ, cực hiếm)",
+Ra:"Nghiên cứu và y học lịch sử; phóng xạ mạnh",
+Ac:"Nghiên cứu và nguồn alpha; phóng xạ",
+Th:"Nhiên liệu hạt nhân tiềm năng và nghiên cứu",
+Pa:"Nghiên cứu hạt nhân",
+U:"Nhiên liệu hạt nhân, điện hạt nhân và nghiên cứu",
+Np:"Nghiên cứu và sản xuất đồng vị",
+Pu:"Nhiên liệu hạt nhân và nguồn năng lượng đặc biệt",
+Am:"Máy dò khói và nguồn neutron; phóng xạ",
+Cm:"Nghiên cứu hạt nhân và nguồn alpha",
+Bk:"Nghiên cứu hạt nhân",
+Cf:"Nguồn neutron và nghiên cứu hạt nhân",
+Es:"Nghiên cứu hạt nhân",
+Fm:"Nghiên cứu hạt nhân",
+Md:"Nghiên cứu hạt nhân",
+No:"Nghiên cứu hạt nhân",
+Lr:"Nghiên cứu hạt nhân",
+Rf:"Nghiên cứu nguyên tố siêu nặng",
+Db:"Nghiên cứu nguyên tố siêu nặng",
+Sg:"Nghiên cứu nguyên tố siêu nặng",
+Bh:"Nghiên cứu nguyên tố siêu nặng",
+Hs:"Nghiên cứu nguyên tố siêu nặng",
+Mt:"Nghiên cứu nguyên tố siêu nặng",
+Ds:"Nghiên cứu nguyên tố siêu nặng",
+Rg:"Nghiên cứu nguyên tố siêu nặng",
+Cn:"Nghiên cứu nguyên tố siêu nặng",
+Nh:"Nghiên cứu nguyên tố siêu nặng",
+Fl:"Nghiên cứu nguyên tố siêu nặng",
+Mc:"Nghiên cứu nguyên tố siêu nặng",
+Lv:"Nghiên cứu nguyên tố siêu nặng",
+Ts:"Nghiên cứu nguyên tố siêu nặng",
+Og:"Nghiên cứu nguyên tố siêu nặng"
+};
+const PERIOD = {
+1:{1:1,18:2},
+2:{1:3,2:4,13:5,14:6,15:7,16:8,17:9,18:10},
+3:{1:11,2:12,13:13,14:14,15:15,16:16,17:17,18:18},
+4:{1:19,2:20,3:21,4:22,5:23,6:24,7:25,8:26,9:27,10:28,11:29,12:30,13:31,14:32,15:33,16:34,17:35,18:36},
+5:{1:37,2:38,3:39,4:40,5:41,6:42,7:43,8:44,9:45,10:46,11:47,12:48,13:49,14:50,15:51,16:52,17:53,18:54},
+6:{1:55,2:56,3:57,4:72,5:73,6:74,7:75,8:76,9:77,10:78,11:79,12:80,13:81,14:82,15:83,16:84,17:85,18:86},
+7:{1:87,2:88,3:89,4:104,5:105,6:106,7:107,8:108,9:109,10:110,11:111,12:112,13:113,14:114,15:115,16:116,17:117,18:118}
+};
+const FROWS = {58:9,59:10,60:11,61:12,62:13,63:14,64:15,65:16,66:17,67:18,68:1,69:2,70:3,71:4,90:9,91:10,92:11,93:12,94:13,95:14,96:15,97:16,98:17,99:18,100:1,101:2,102:3,103:4};
+function electronConfig(z){
+ const order=[['1s',2],['2s',2],['2p',6],['3s',2],['3p',6],['4s',2],['3d',10],['4p',6],['5s',2],['4d',10],['5p',6],['6s',2],['4f',14],['5d',10],['6p',6],['7s',2],['5f',14],['6d',10],['7p',6]];
+ let n=z,out=[];for(const [orb,cap] of order){if(n<=0)break;let q=Math.min(cap,n);out.push(orb+q);n-=q}return out.join(' ')
+}
+function select(i){idx=(i+E.length)%E.length;$('select').value=idx;document.querySelectorAll('.el').forEach((x,j)=>x.classList.toggle('active',j===idx));build()}
+function category(z,sym){
+ if([3,11,19,37,55,87].includes(z)) return 'alkali';
+ if([4,12,20,38,56,88].includes(z)) return 'alkaline';
+ if(z>=57&&z<=71||z>=89&&z<=103) return 'f';
+ if((z>=21&&z<=30)||(z>=39&&z<=48)||(z>=72&&z<=80)||(z>=104&&z<=112)) return 'transition';
+ if([5,14,32,33,51,52].includes(z)) return 'metalloid';
+ if([13,31,49,50,81,82,83,84,113,114,115,116].includes(z)) return 'post';
+ if([9,17,35,53,85,117].includes(z)) return 'halogen';
+ if([2,10,18,36,54,86,118].includes(z)) return 'noble';
+ return 'nonmetal';
+}
+const layout = {
+1:{1:1,18:2},
+2:{1:3,2:4,13:5,14:6,15:7,16:8,17:9,18:10},
+3:{1:11,2:12,13:13,14:14,15:15,16:16,17:17,18:18},
+4:{1:19,2:20,3:21,4:22,5:23,6:24,7:25,8:26,9:27,10:28,11:29,12:30,13:31,14:32,15:33,16:34,17:35,18:36},
+5:{1:37,2:38,3:39,4:40,5:41,6:42,7:43,8:44,9:45,10:46,11:47,12:48,13:49,14:50,15:51,16:52,17:53,18:54},
+6:{1:55,2:56,4:72,5:73,6:74,7:75,8:76,9:77,10:78,11:79,12:80,13:81,14:82,15:83,16:84,17:85,18:86},
+7:{1:87,2:88,4:104,5:105,6:106,7:107,8:108,9:109,10:110,11:111,12:112,13:113,14:114,15:115,16:116,17:117,18:118}
+};
+const fRows = [[57,58,59,60,61,62,63,64,65,66,67,68,69,70,71],[89,90,91,92,93,94,95,96,97,98,99,100,101,102,103]];
+E.forEach((x,i)=>{let o=document.createElement('option');o.value=i;o.textContent=`${x[2]} · ${x[0]} — ${x[1]}`;$('select').appendChild(o)});
+$('groupLabels').innerHTML=Array.from({length:18},(_,i)=>'<span>'+(i+1)+'</span>').join('');
+for(let p=1;p<=7;p++){let d=document.createElement('div');d.className='period';d.style.gridColumn='1';d.style.gridRow=String(p);d.textContent=p;$('periodic').appendChild(d)}
+for(let r=1;r<=7;r++){for(let c=1;c<=18;c++){let z=layout[r][c];if(r>=6&&c===3){let ph=document.createElement('div');ph.className='placeholder';ph.style.gridColumn='4';ph.style.gridRow=String(r);ph.innerHTML='<b>'+(r===6?'57–71':'89–103')+'</b><small>'+(r===6?'Lanthanide':'Actinide')+'</small>';$('periodic').appendChild(ph)}else if(z){let x=E[z-1],b=document.createElement('button');b.className='el cat-'+category(z,x[0]);b.style.gridColumn=String(c+1);b.style.gridRow=String(r);b.innerHTML='<span class="z">'+x[2]+'</span><b>'+x[0]+'</b><small>'+x[1]+'</small>';b.onclick=()=>{select(z-1);$('tablePanel').classList.remove('show')};$('periodic').appendChild(b)}}}
+fRows.forEach((row,ri)=>row.forEach((z,i)=>{let x=E[z-1],b=document.createElement('button');b.className='el cat-f';b.style.gridColumn=String(i+4);b.style.gridRow=String(9+ri);b.innerHTML='<span class="z">'+x[2]+'</span><b>'+x[0]+'</b><small>'+x[1]+'</small>';b.onclick=()=>{select(z-1);$('tablePanel').classList.remove('show')};$('periodic').appendChild(b)}));
+
+$('select').onchange=e=>select(+e.target.value);$('minus').onclick=()=>select(idx-1);$('plus').onclick=()=>select(idx+1);
+$('speed').oninput=e=>speed=+e.target.value;$('pause').onclick=()=>{paused=!paused;$('pause').textContent=paused?'▶':'Ⅱ'};$('auto').onclick=()=>auto=!auto;$('reset').onclick=()=>{rx=.25;ry=0;zoom=1};
+$('tableBtn').onclick=()=>{$('tablePanel').classList.toggle('show');$('aboutPanel').classList.remove('show')};$('aboutBtn').onclick=()=>{$('aboutPanel').classList.toggle('show');$('tablePanel').classList.remove('show')};$('atomBtn').onclick=()=>{$('tablePanel').classList.remove('show');$('aboutPanel').classList.remove('show')};
+$('scene').addEventListener('pointerdown',e=>{drag=true;lx=e.clientX;ly=e.clientY;$('scene').setPointerCapture(e.pointerId)});$('scene').addEventListener('pointermove',e=>{if(!drag)return;ry+=(e.clientX-lx)*.008;rx+=(e.clientY-ly)*.008;lx=e.clientX;ly=e.clientY});$('scene').addEventListener('pointerup',()=>drag=false);
+$('scene').addEventListener('wheel',e=>{e.preventDefault();zoom=Math.max(.55,Math.min(2.2,zoom-e.deltaY*.001))},{passive:false});
+function resize(){let w=$('scene').clientWidth,h=$('scene').clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}addEventListener('resize',resize);
+function animate(){requestAnimationFrame(animate);if(!paused&&auto)ry+=.004*speed;root.rotation.x=rx;root.rotation.y=ry;camera.position.z=8/zoom;let t=performance.now()/1000;electrons.forEach(e=>{let u=e.userData,a=t*(.45+u.shell*.07)*speed+u.phase,v=new THREE.Vector3(Math.cos(a)*u.r,Math.sin(a)*u.r,0);v.applyEuler(new THREE.Euler(u.tilt,u.az,0));e.position.copy(v)});renderer.render(scene,camera)}
+init();
+</script>
+</body>
+</html><style>
+/* ===== NEW DESIGN: WHITE / BLUE ===== */
+:root{
+ --bg:#f4f8fc;--panel:#ffffff;--panel2:#eef5fb;--accent:#1769aa;--accent2:#2f86c9;
+ --muted:#66788a;--text:#17324d;--red:#c95757;--gray:#7d8994;--blue:#287fbd;--green:#4d8b70;--purple:#80658f;
+}
+html,body{background:#f4f8fc!important;color:var(--text)!important}
+body{background-image:radial-gradient(circle at 20% 15%,rgba(47,134,201,.10),transparent 28%),linear-gradient(135deg,#fff 0%,#f3f8fc 55%,#eaf3fa 100%)!important}
+main:before{color:#1769aa!important;letter-spacing:.18em!important}
+main:after{background:linear-gradient(90deg,transparent,#b8d4e8,transparent)!important;box-shadow:none!important}
+canvas{filter:none!important}
+.tools{left:auto!important;right:26px!important}
+.tools button{background:rgba(255,255,255,.92)!important;border:1px solid #cbdce9!important;color:#2a5878!important;box-shadow:0 5px 18px rgba(35,77,110,.10)!important}
+.tools button:hover,.tools button.active{background:#e8f3fb!important;color:#1769aa!important;border-color:#8fb9d6!important}
+.info{left:26px!important;right:auto!important;background:rgba(255,255,255,.94)!important;border:1px solid #cfdeea!important;box-shadow:0 12px 32px rgba(37,77,108,.10)!important}
+.info h2,.info .eyebrow{color:#1769aa!important}
+.panel{left:auto!important;right:92px!important;background:rgba(255,255,255,.98)!important;border:1px solid #cbdce9!important;box-shadow:0 18px 48px rgba(35,77,110,.16)!important}
+.periodic{background:#f8fbfe!important}
+.periodic .cell{background:#fff!important;border:1px solid #d1e0eb!important;box-shadow:none!important;color:#24435c!important}
+.periodic .cell:hover{background:#edf6fc!important;border-color:#7eafd0!important;transform:translateY(-1px)}
+.periodic .cell.sel{background:#e1f0fa!important;border-color:#2f86c9!important;color:#155987!important;box-shadow:inset 0 0 0 1px #8ebbd8!important}
+.bottom{background:rgba(255,255,255,.94)!important;border-top:1px solid #cbdce9!important;box-shadow:0 -10px 30px rgba(35,77,110,.08)!important}
+.counts,.controls,.card{background:#fff!important;border:1px solid #d4e2ec!important;box-shadow:none!important}
+.counts .num,.card .symbol{color:#1769aa!important}
+.counts .p b{color:#657580!important}.counts .n b{color:#c95757!important}.counts .e b{color:#287fbd!important}
+.controls button,.controls input,.select-wrap select{background:#f7fbfe!important;border:1px solid #cbdce9!important;color:#264962!important}
+.controls button:hover{background:#e9f4fb!important;border-color:#8fb9d6!important;color:#1769aa!important}
+input[type=range]{accent-color:#1769aa!important}
+.card{color:#24435c!important}.card .mass,.card .name{color:#66788a!important}
+.legend{color:#647789!important}.dot.proton{background:#7d8994!important}.dot.neutron{background:#c95757!important}.dot.electron{background:#287fbd!important}
+.about{background:rgba(255,255,255,.96)!important;border:1px solid #cfdeea!important;color:#35536b!important}
+button{font-family:inherit}
+</style>
